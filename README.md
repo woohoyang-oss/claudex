@@ -97,69 +97,59 @@ alias claudex='CLAUDE_CODE_USE_OPENAI=1 OPENAI_MODEL=codexplan node ~/claudex/di
 
 ## Quick Start — VS Code
 
-Use Claudex inside VS Code, just like Claude Code — same UI, same shortcuts, but powered by GPT-5.4.
+Use Claudex inside VS Code's integrated terminal. Full agentic coding with GPT-5.4, right in your editor.
 
-### Step 1: Install Prerequisites
+> **Note:** The Claude Code VS Code extension requires Anthropic login and cannot be bypassed.
+> Instead, Claudex runs in VS Code's built-in terminal — same workflow, no Anthropic account needed.
 
-```bash
-# Install VS Code (if not installed)
-brew install --cask visual-studio-code
-
-# Install Claude Code extension
-code --install-extension anthropic.claude-code
-```
-
-### Step 2: Build Claudex
+### Step 1: Build Claudex + Set Up Alias
 
 ```bash
-# Skip if you already did this in the Terminal setup above
+# Skip if you already did the Terminal setup above
 git clone https://github.com/woohoyang-oss/claudex.git
 cd claudex
-bun install
-bun run build
+bun install && bun run build
+npm install -g @openai/codex && codex login
+
+# Add alias to your shell
+echo 'alias claudex="CLAUDE_CODE_USE_OPENAI=1 OPENAI_MODEL=codexplan node ~/claudex/dist/cli.mjs"' >> ~/.zshrc
+source ~/.zshrc
 ```
 
-### Step 3: Set Up Codex Auth
+### Step 2: Use in VS Code
+
+1. Open your project in VS Code: `code ~/your-project`
+2. Open the integrated terminal: **Ctrl+`** (backtick)
+3. Type `claudex` and start coding!
+
+```
+┌─────────────────────────────────────────────────┐
+│  VS Code                                        │
+│  ┌─────────────────────────────────────────────┐ │
+│  │  your-project/src/app.ts        (editor)    │ │
+│  │  ...                                        │ │
+│  ├─────────────────────────────────────────────┤ │
+│  │  TERMINAL                                   │ │
+│  │  $ claudex                                  │ │
+│  │  ╭── Claude Code v0.1.4 ──────────────────╮ │ │
+│  │  │  codexplan · GPT-5.4                   │ │ │
+│  │  ╰───────────────────────────────────────╯ │ │
+│  │  ❯ fix the bug in app.ts                   │ │
+│  └─────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────┘
+```
+
+Claudex can read and edit any file in your VS Code workspace, run terminal commands, and use all Claude Code tools — just powered by GPT-5.4 instead of Claude.
+
+### Switching Models
 
 ```bash
-# Skip if you already did this in the Terminal setup above
-npm install -g @openai/codex
-codex login
+# GPT-5.4 (best quality)
+OPENAI_MODEL=codexplan claudex
+
+# GPT-5.3 Codex Spark (faster)
+OPENAI_MODEL=codexspark claudex
 ```
-
-### Step 4: Configure VS Code
-
-Open VS Code Settings JSON (**Cmd+Shift+P** → "Preferences: Open User Settings (JSON)") and add:
-
-```json
-{
-  "claudeCode.claudeProcessWrapper": "/absolute/path/to/claudex/bin/claudex",
-  "claudeCode.environmentVariables": [
-    { "name": "CLAUDE_CODE_USE_OPENAI", "value": "1" },
-    { "name": "OPENAI_MODEL", "value": "codexplan" }
-  ]
-}
-```
-
-> Replace `/absolute/path/to/claudex` with your actual clone path.
-> For example: `/Users/yourname/claudex/bin/claudex`
-
-### Step 5: Use It
-
-1. Open VS Code: `code ~/your-project`
-2. **Cmd+Shift+P** → **"Claude: New Conversation"**
-3. Start coding with GPT-5.4!
-
-Everything works exactly like Claude Code — file editing, terminal commands, multi-step agents — just powered by Codex.
-
-### Switching Models in VS Code
-
-Change the `OPENAI_MODEL` value in your VS Code settings:
-
-| Value | Model | Speed |
-|---|---|---|
-| `codexplan` | GPT-5.4 (best quality) | Medium |
-| `codexspark` | GPT-5.3 Codex Spark | Fast |
 
 ---
 
@@ -272,8 +262,7 @@ Only **2 source files** modified + 1 wrapper script added:
 | Empty output (qwen3) | Already patched — reasoning field handled |
 | `OPENAI_API_KEY required` | Set `OPENAI_API_KEY=ollama` for remote Ollama |
 | Codex auth expired | Run `codex login` again |
-| VS Code shows "Claude not found" | Check `claudeCode.claudeProcessWrapper` path is correct and absolute |
-| VS Code extension not responding | Restart VS Code after changing settings |
+| Claude Code extension asks for login | Expected — use VS Code terminal + `claudex` command instead |
 
 ---
 
