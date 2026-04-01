@@ -86,11 +86,15 @@ CLAUDE_CODE_USE_OPENAI=1 OPENAI_MODEL=codexplan node dist/cli.mjs
 
 That's it. All tools, streaming, multi-step reasoning — everything works.
 
-### Shell Alias (optional)
+### Shell Alias (recommended)
 
 ```bash
 # Add to ~/.zshrc or ~/.bashrc
-alias claudex='CLAUDE_CODE_USE_OPENAI=1 OPENAI_MODEL=codexplan node ~/claudex/dist/cli.mjs'
+echo 'alias claudex="CLAUDE_CODE_USE_OPENAI=1 OPENAI_MODEL=codexplan node ~/claudex/dist/cli.mjs"' >> ~/.zshrc
+source ~/.zshrc
+
+# Now just type:
+claudex
 ```
 
 ---
@@ -102,23 +106,13 @@ Use Claudex inside VS Code's integrated terminal. Full agentic coding with GPT-5
 > **Note:** The Claude Code VS Code extension requires Anthropic login and cannot be bypassed.
 > Instead, Claudex runs in VS Code's built-in terminal — same workflow, no Anthropic account needed.
 
-### Step 1: Build Claudex + Set Up Alias
+### Step 1: Complete the Terminal Setup Above
 
-```bash
-# Skip if you already did the Terminal setup above
-git clone https://github.com/woohoyang-oss/claudex.git
-cd claudex
-bun install && bun run build
-npm install -g @openai/codex && codex login
-
-# Add alias to your shell
-echo 'alias claudex="CLAUDE_CODE_USE_OPENAI=1 OPENAI_MODEL=codexplan node ~/claudex/dist/cli.mjs"' >> ~/.zshrc
-source ~/.zshrc
-```
+Make sure you've done the Terminal quick start (clone, build, `codex login`, alias).
 
 ### Step 2: Use in VS Code
 
-1. Open your project in VS Code: `code ~/your-project`
+1. Open your project: `code ~/your-project`
 2. Open the integrated terminal: **Ctrl+`** (backtick)
 3. Type `claudex` and start coding!
 
