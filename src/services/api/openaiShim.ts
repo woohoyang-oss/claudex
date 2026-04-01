@@ -345,8 +345,9 @@ async function* openaiStreamToAnthropic(
       for (const choice of chunk.choices ?? []) {
         const delta = choice.delta
 
-        // Text content
-        if (delta.content) {
+        // Text content (also handle reasoning field from models like qwen3)
+        const _deltaText = delta.content || delta.reasoning || delta.reasoning_content
+        if (_deltaText) {
           if (!hasEmittedContentStart) {
             yield {
               type: 'content_block_start',
@@ -358,7 +359,7 @@ async function* openaiStreamToAnthropic(
           yield {
             type: 'content_block_delta',
             index: contentBlockIndex,
-            delta: { type: 'text_delta', text: delta.content },
+            delta: { type: 'text_delta', text: _deltaText },
           }
         }
 
@@ -686,8 +687,9 @@ class OpenAIShimMessages {
     const choice = data.choices?.[0]
     const content: Array<Record<string, unknown>> = []
 
-    if (choice?.message?.content) {
-      content.push({ type: 'text', text: choice.message.content })
+    const _msgText = choice?.message?.content || choice?.message?.reasoning || choice?.message?.reasoning_content
+    if (_msgText) {
+      content.push({ type: 'text', text: _msgText })
     }
 
     if (choice?.message?.tool_calls) {

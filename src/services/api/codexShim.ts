@@ -295,6 +295,67 @@ export function convertAnthropicMessagesToResponsesInput(
   )
 }
 
+/** Keywords not permitted by Codex/OpenAI strict mode */
+const DISALLOWED_KEYS = new Set([
+  'propertyNames', 'patternProperties', 'unevaluatedProperties',
+  'unevaluatedItems', 'if', 'then', 'else', 'not', 'contains',
+  'minProperties', 'maxProperties', 'dependentRequired',
+  'dependentSchemas', '$anchor', '$dynamicAnchor', '$dynamicRef',
+  '$vocabulary', 'contentEncoding', 'contentMediaType',
+  'format', 'pattern', 'minLength', 'maxLength', 'minimum', 'maximum',
+  'exclusiveMinimum', 'exclusiveMaximum', 'multipleOf',
+  'minItems', 'maxItems', 'uniqueItems',
+  '$schema', '$id', '$ref', '$comment', 'examples', 'deprecated',
+  'readOnly', 'writeOnly',
+])
+
+/** Recursively enforce strict schema: all properties in required, additionalProperties: false */
+function enforceStrictSchema(schema: Record<string, unknown>): Record<string, unknown> {
+  const result: Record<string, unknown> = {}
+  for (const [k, v] of Object.entries(schema)) {
+    if (!DISALLOWED_KEYS.has(k)) result[k] = v
+  }
+  if (result.properties && typeof result.properties === 'object') {
+    const props = result.properties as Record<string, Record<string, unknown>>
+    const existingRequired = new Set(Array.isArray(result.required) ? result.required as string[] : [])
+    // All properties must be in required; make previously-optional ones nullable
+    const allKeys = Object.keys(props)
+    result.required = allKeys
+    result.additionalProperties = false
+    for (const key of allKeys) {
+      if (!existingRequired.has(key) && props[key] && typeof props[key] === 'object') {
+        const prop = props[key] as Record<string, unknown>
+        // Make optional property nullable by wrapping in anyOf with null
+        if (!prop.anyOf && !prop.oneOf) {
+          const { ...rest } = prop
+          props[key] = { anyOf: [rest, { type: 'null' }] } as unknown as Record<string, unknown>
+        }
+      }
+    }
+    const fixed: Record<string, unknown> = {}
+    for (const [key, val] of Object.entries(props)) {
+      fixed[key] = val && typeof val === 'object' ? enforceStrictSchema(val as Record<string, unknown>) : val
+    }
+    result.properties = fixed
+  }
+  if (result.items && typeof result.items === 'object') {
+    result.items = enforceStrictSchema(result.items as Record<string, unknown>)
+  }
+  // Strict mode: additionalProperties must be false (not a schema object).
+  // If it's a schema object, replace with false.
+  if (result.additionalProperties && typeof result.additionalProperties === 'object') {
+    result.additionalProperties = false
+  }
+  for (const key of ['anyOf', 'oneOf', 'allOf'] as const) {
+    if (Array.isArray(result[key])) {
+      result[key] = (result[key] as Record<string, unknown>[]).map(s =>
+        typeof s === 'object' && s ? enforceStrictSchema(s as Record<string, unknown>) : s
+      )
+    }
+  }
+  return result
+}
+
 export function convertToolsToResponsesTools(
   tools: Array<{ name?: string; description?: string; input_schema?: Record<string, unknown> }>,
 ): ResponsesTool[] {
@@ -304,7 +365,7 @@ export function convertToolsToResponsesTools(
       type: 'function',
       name: tool.name ?? 'tool',
       description: tool.description ?? '',
-      parameters: tool.input_schema ?? { type: 'object', properties: {} },
+      parameters: enforceStrictSchema(tool.input_schema ?? { type: 'object', properties: {} }),
       strict: true,
     }))
 }
