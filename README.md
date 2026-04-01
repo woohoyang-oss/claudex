@@ -50,32 +50,38 @@ Claude Code doesn't know it's talking to a different model.
 
 ---
 
-## Quick Start
+## Quick Start — Terminal
 
 ### 1. Install
 
 ```bash
+# Install Bun (if not installed)
+curl -fsSL https://bun.sh/install | bash
+
+# Clone and build
 git clone https://github.com/woohoyang-oss/claudex.git
 cd claudex
-bun install    # requires Bun: curl -fsSL https://bun.sh/install | bash
+bun install
 bun run build
 ```
 
 ### 2. Set Up Codex Auth (one-time)
 
 ```bash
+# Install Codex CLI
 npm install -g @openai/codex
-codex login    # opens browser → sign in with ChatGPT account
+
+# Login with your ChatGPT account (opens browser)
+codex login
 ```
+
+> Requires ChatGPT Plus ($20/mo) or Pro ($200/mo) subscription.
 
 ### 3. Run
 
 ```bash
-# ⭐ Codex (GPT-5.4) — recommended
+# Codex (GPT-5.4) — recommended
 CLAUDE_CODE_USE_OPENAI=1 OPENAI_MODEL=codexplan node dist/cli.mjs
-
-# Codex Spark (GPT-5.3, faster)
-CLAUDE_CODE_USE_OPENAI=1 OPENAI_MODEL=codexspark node dist/cli.mjs
 ```
 
 That's it. All tools, streaming, multi-step reasoning — everything works.
@@ -83,9 +89,77 @@ That's it. All tools, streaming, multi-step reasoning — everything works.
 ### Shell Alias (optional)
 
 ```bash
-# Add to ~/.zshrc
+# Add to ~/.zshrc or ~/.bashrc
 alias claudex='CLAUDE_CODE_USE_OPENAI=1 OPENAI_MODEL=codexplan node ~/claudex/dist/cli.mjs'
 ```
+
+---
+
+## Quick Start — VS Code
+
+Use Claudex inside VS Code, just like Claude Code — same UI, same shortcuts, but powered by GPT-5.4.
+
+### Step 1: Install Prerequisites
+
+```bash
+# Install VS Code (if not installed)
+brew install --cask visual-studio-code
+
+# Install Claude Code extension
+code --install-extension anthropic.claude-code
+```
+
+### Step 2: Build Claudex
+
+```bash
+# Skip if you already did this in the Terminal setup above
+git clone https://github.com/woohoyang-oss/claudex.git
+cd claudex
+bun install
+bun run build
+```
+
+### Step 3: Set Up Codex Auth
+
+```bash
+# Skip if you already did this in the Terminal setup above
+npm install -g @openai/codex
+codex login
+```
+
+### Step 4: Configure VS Code
+
+Open VS Code Settings JSON (**Cmd+Shift+P** → "Preferences: Open User Settings (JSON)") and add:
+
+```json
+{
+  "claudeCode.claudeProcessWrapper": "/absolute/path/to/claudex/bin/claudex",
+  "claudeCode.environmentVariables": [
+    { "name": "CLAUDE_CODE_USE_OPENAI", "value": "1" },
+    { "name": "OPENAI_MODEL", "value": "codexplan" }
+  ]
+}
+```
+
+> Replace `/absolute/path/to/claudex` with your actual clone path.
+> For example: `/Users/yourname/claudex/bin/claudex`
+
+### Step 5: Use It
+
+1. Open VS Code: `code ~/your-project`
+2. **Cmd+Shift+P** → **"Claude: New Conversation"**
+3. Start coding with GPT-5.4!
+
+Everything works exactly like Claude Code — file editing, terminal commands, multi-step agents — just powered by Codex.
+
+### Switching Models in VS Code
+
+Change the `OPENAI_MODEL` value in your VS Code settings:
+
+| Value | Model | Speed |
+|---|---|---|
+| `codexplan` | GPT-5.4 (best quality) | Medium |
+| `codexspark` | GPT-5.3 Codex Spark | Fast |
 
 ---
 
@@ -135,8 +209,9 @@ Any OpenAI-compatible API endpoint works.
 | Slash commands (/commit, /review, /diff, etc.) | ✅ |
 | Memory system | ✅ |
 | Images (base64/URL) | ✅ |
-| Codex API (GPT-5.4, GPT-5.3) | ✅ **NEW** |
-| Reasoning models (qwen3, etc.) | ✅ **NEW** |
+| **VS Code integration** | ✅ **NEW** |
+| **Codex API (GPT-5.4, GPT-5.3)** | ✅ **NEW** |
+| **Reasoning models (qwen3, etc.)** | ✅ **NEW** |
 
 ---
 
@@ -167,20 +242,13 @@ No separate billing for Codex — it's included in your ChatGPT subscription.
 
 ## What Changed from OpenClaude
 
-Only **2 files** modified:
+Only **2 source files** modified + 1 wrapper script added:
 
 | File | Change |
 |---|---|
 | `src/services/api/openaiShim.ts` | Handle `reasoning` field from thinking models (qwen3, DeepSeek-R1) |
 | `src/services/api/codexShim.ts` | `enforceStrictSchema()` — fix tool schemas for Codex strict mode |
-
-### Codex Schema Fix Details
-
-Codex API enforces strict JSON Schema on tool definitions:
-- All `properties` must be in `required`
-- `additionalProperties: false` required
-- Disallowed keywords removed (`format`, `pattern`, `propertyNames`, etc.)
-- Optional fields wrapped as `anyOf: [type, {type: "null"}]`
+| `bin/claudex` | Wrapper script for VS Code integration |
 
 ---
 
@@ -204,6 +272,8 @@ Codex API enforces strict JSON Schema on tool definitions:
 | Empty output (qwen3) | Already patched — reasoning field handled |
 | `OPENAI_API_KEY required` | Set `OPENAI_API_KEY=ollama` for remote Ollama |
 | Codex auth expired | Run `codex login` again |
+| VS Code shows "Claude not found" | Check `claudeCode.claudeProcessWrapper` path is correct and absolute |
+| VS Code extension not responding | Restart VS Code after changing settings |
 
 ---
 

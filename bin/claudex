@@ -1,0 +1,8 @@
+#!/bin/bash
+# Claudex — Claude Code + Codex wrapper
+# Used by Claude Code VS Code extension as custom CLI path
+
+export CLAUDE_CODE_USE_OPENAI=1
+export OPENAI_MODEL="${OPENAI_MODEL:-codexplan}"
+
+exec node "$(dirname "$0")/../dist/cli.mjs" "$@"
