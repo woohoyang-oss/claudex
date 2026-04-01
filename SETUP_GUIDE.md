@@ -1,141 +1,179 @@
-# Claudex Setup Guide
+# Claudex — Implementation Guide
 
-**Claudex = Claude Code + Codex** — Run Claude Code's full tool system with GPT-5.4 (Codex), Ollama, or any OpenAI-compatible LLM.
+> This guide is written for both humans and AI agents (Claude, Codex, GPT).
+> If you are an AI: follow the steps exactly. If you are a human: copy-paste the commands.
 
 ---
 
 ## What is Claudex?
 
-Claude Code is Anthropic's agentic coding CLI with powerful built-in tools (Bash, file read/write/edit, grep, glob, agents, MCP, etc.). **Claudex patches OpenClaude to work with OpenAI's Codex API (GPT-5.4)**, giving you Claude Code's UX powered by GPT-5.4 — at no extra cost beyond your ChatGPT subscription.
+**Claudex = OpenClaude + Codex**
 
-```
-┌─────────────────────────────────────────┐
-│          Claude Code Tool System        │
-│  (Bash, Read, Write, Edit, Grep, ...)   │
-└──────────────┬──────────────────────────┘
-               │
-        ┌──────▼──────┐
-        │  openaiShim  │  ← format translation layer
-        └──────┬──────┘
-               │
-     ┌─────────┼─────────────┐
-     ▼         ▼             ▼
-  Codex     Ollama      OpenAI API
- (GPT-5.4) (qwen3,etc)  (gpt-4o)
-```
+- **OpenClaude**: A patched version of Claude Code (Anthropic's agentic coding CLI) that works with any OpenAI-compatible LLM instead of Claude.
+- **Codex**: OpenAI's coding backend (GPT-5.4) available through ChatGPT Plus/Pro subscriptions.
+- **Claudex**: Combines both — run Claude Code's full tool system (Bash, Read, Write, Edit, Grep, Glob, Agent, MCP, etc.) powered by GPT-5.4 via the Codex API.
+
+### Why?
+
+Claude Code has the best agentic tool UX. Codex has GPT-5.4. Claudex gives you both for $20/month (ChatGPT Plus).
 
 ---
 
-## Prerequisites
+## Architecture
 
-- macOS (Apple Silicon recommended)
-- Node.js v22+
-- [Bun](https://bun.sh) runtime
-- ChatGPT Plus ($20/mo) or Pro ($200/mo) subscription — for Codex
+```
+User Input
+    │
+    ▼
+┌─────────────────────────────────┐
+│      Claude Code Runtime        │  ← Ink-based terminal UI
+│  (tools, agents, MCP, memory)   │
+└───────────────┬─────────────────┘
+                │
+         ┌──────▼──────┐
+         │  openaiShim  │  ← Converts Anthropic SDK format ↔ OpenAI format
+         │  codexShim   │  ← Converts OpenAI Chat Completions ↔ Codex Responses API
+         └──────┬──────┘
+                │
+    ┌───────────┼───────────────┐
+    ▼           ▼               ▼
+Codex API    Ollama        OpenAI API
+(GPT-5.4)   (local LLM)   (gpt-4o)
+```
+
+### Key Translation Layers
+
+1. **openaiShim.ts** — Translates between Anthropic message format and OpenAI Chat Completions API. Handles: messages, tool_use/tool_result, streaming SSE, system prompts, reasoning fields.
+
+2. **codexShim.ts** — Translates between OpenAI Chat Completions and Codex Responses API. Handles: input format conversion, tool schema strict mode enforcement, SSE event mapping.
 
 ---
 
-## Quick Start
+## Setup Steps
 
-### 1. Clone & Build
+### Prerequisites
+
+| Requirement | How to install |
+|---|---|
+| macOS or Linux | — |
+| Node.js v22+ | `brew install node@22` |
+| Bun | `curl -fsSL https://bun.sh/install \| bash` |
+| ChatGPT Plus ($20/mo) | [chatgpt.com](https://chatgpt.com) |
+
+### Step 1: Clone and Build
 
 ```bash
 git clone https://github.com/woohoyang-oss/claudex.git
 cd claudex
 bun install
 bun run build
+# Output: dist/cli.mjs
 ```
 
-### 2. Set Up Codex Auth
+### Step 2: Codex Authentication
 
 ```bash
 npm install -g @openai/codex
-codex login    # Opens browser → sign in with ChatGPT account
-               # Creates ~/.codex/auth.json automatically
+codex login
+# Browser opens → sign in with ChatGPT account
+# Result: ~/.codex/auth.json is created with access_token
 ```
 
-### 3. Run
+### Step 3: Run
 
 ```bash
-# Codex (GPT-5.4) — recommended
 CLAUDE_CODE_USE_OPENAI=1 OPENAI_MODEL=codexplan node dist/cli.mjs
-
-# Codex Spark (GPT-5.3, faster)
-CLAUDE_CODE_USE_OPENAI=1 OPENAI_MODEL=codexspark node dist/cli.mjs
-
-# Ollama (local/remote, free)
-CLAUDE_CODE_USE_OPENAI=1 \
-OPENAI_BASE_URL=http://localhost:11434/v1 \
-OPENAI_MODEL=qwen3:14b \
-OPENAI_API_KEY=ollama \
-node dist/cli.mjs
 ```
 
-### 4. (Optional) Shell Aliases
-
-Add to `~/.zshrc`:
+### Step 4 (optional): Create Alias
 
 ```bash
-alias claudex='CLAUDE_CODE_USE_OPENAI=1 OPENAI_MODEL=codexplan node ~/claudex/dist/cli.mjs'
-alias claudex-spark='CLAUDE_CODE_USE_OPENAI=1 OPENAI_MODEL=codexspark node ~/claudex/dist/cli.mjs'
+echo 'alias claudex="CLAUDE_CODE_USE_OPENAI=1 OPENAI_MODEL=codexplan node ~/claudex/dist/cli.mjs"' >> ~/.zshrc
+source ~/.zshrc
+claudex
 ```
 
 ---
 
-## What Changed (2 files)
+## Patches Applied (2 files changed)
 
-### `src/services/api/openaiShim.ts` — Reasoning model support
+### Patch 1: `src/services/api/openaiShim.ts`
 
-Models like qwen3 return responses in `reasoning` field instead of `content` when tools are present. This patch handles both fields in streaming and non-streaming modes.
+**Problem**: Models like qwen3 return responses in `delta.reasoning` instead of `delta.content` when tools are present.
 
-### `src/services/api/codexShim.ts` — Codex strict schema compatibility
+**Fix**: Check `delta.content || delta.reasoning || delta.reasoning_content` in both streaming and non-streaming code paths.
 
-Codex API enforces strict JSON Schema validation on tool definitions. This patch adds `enforceStrictSchema()` which:
-- Puts all properties in `required` array
-- Sets `additionalProperties: false`
-- Removes disallowed keywords (`format`, `pattern`, `propertyNames`, etc.)
-- Wraps optional fields as nullable (`anyOf: [type, {type: "null"}]`)
-- Recursively processes nested schemas
+```typescript
+// Streaming (line ~348)
+const _deltaText = delta.content || delta.reasoning || delta.reasoning_content
+if (_deltaText) { ... }
+
+// Non-streaming (line ~690)
+const _msgText = choice?.message?.content || choice?.message?.reasoning || choice?.message?.reasoning_content
+if (_msgText) { ... }
+```
+
+### Patch 2: `src/services/api/codexShim.ts`
+
+**Problem**: Codex API strict mode rejects tool schemas that have optional properties not in `required`, use `additionalProperties` as schema objects, or contain keywords like `format`, `pattern`, `propertyNames`.
+
+**Fix**: Added `enforceStrictSchema()` function (~60 lines) that recursively:
+
+1. Removes disallowed JSON Schema keywords (`format`, `pattern`, `propertyNames`, `minLength`, `maxLength`, `$ref`, `$id`, `$schema`, `$comment`, etc.)
+2. Adds all property keys to `required` array
+3. Wraps previously-optional properties as nullable: `{anyOf: [originalType, {type: "null"}]}`
+4. Forces `additionalProperties: false` (replaces schema objects with `false`)
+5. Recurses into `items`, `anyOf`, `oneOf`, `allOf`, and nested `properties`
+
+```typescript
+// Applied at tool conversion (line ~365)
+parameters: enforceStrictSchema(tool.input_schema ?? { type: 'object', properties: {} }),
+```
 
 ---
 
-## Available Models
+## Model Reference
 
-| `OPENAI_MODEL` | Actual Model | Auth | Notes |
+| OPENAI_MODEL value | Actual model | API endpoint | Auth method |
 |---|---|---|---|
-| `codexplan` | GPT-5.4 (reasoning: high) | ChatGPT subscription | Best quality |
-| `codexspark` | GPT-5.3-codex-spark | ChatGPT subscription | Faster |
-| `gpt-4o` | GPT-4o | OpenAI API key | Standard API billing |
-| `qwen3:14b` | Qwen3 14B | None (Ollama) | Free, local |
+| `codexplan` | GPT-5.4 (reasoning: high) | chatgpt.com/backend-api/codex | ~/.codex/auth.json |
+| `codexspark` | GPT-5.3-codex-spark | chatgpt.com/backend-api/codex | ~/.codex/auth.json |
+| `gpt-4o` | GPT-4o | api.openai.com/v1 | OPENAI_API_KEY |
+| `qwen3:14b` | Qwen3 14B (Q4_K_M) | localhost:11434/v1 | none (Ollama) |
 
 ---
 
-## Pricing
+## Environment Variables
 
-| Plan | Monthly | Codex Included |
+| Variable | Default | Description |
 |---|---|---|
-| ChatGPT Plus | $20 | Yes (30-150 msgs/5hr) |
-| ChatGPT Pro | $200 | Yes (300-1500 msgs/5hr) |
-| Ollama | Free | N/A |
-
-No separate API billing needed for Codex — it's included in your ChatGPT subscription.
+| `CLAUDE_CODE_USE_OPENAI` | — | **Required.** Set to `1` to enable OpenAI provider. |
+| `OPENAI_MODEL` | `gpt-4o` | Model name or alias (`codexplan`, `codexspark`, etc.) |
+| `OPENAI_API_KEY` | — | API key. Not needed for Codex (uses auth.json) or Ollama. |
+| `OPENAI_BASE_URL` | auto | API endpoint. Auto-detected for Codex. Set for Ollama/custom. |
+| `CODEX_API_KEY` | — | Override Codex access token (instead of auth.json). |
+| `CODEX_AUTH_JSON_PATH` | `~/.codex/auth.json` | Custom path to Codex auth file. |
 
 ---
 
 ## Troubleshooting
 
-| Issue | Solution |
-|---|---|
-| Empty output (qwen3) | Reasoning field patch already applied |
-| Codex 400 schema error | Strict schema patch already applied |
-| `OPENAI_API_KEY required` (remote Ollama) | Set `OPENAI_API_KEY=ollama` as dummy |
-| Codex auth expired | Run `codex login` again |
-| Slow response (qwen3 + tools) | qwen3 thinking is verbose with tools; try `qwen3-nothink:14b` |
+| Error | Cause | Fix |
+|---|---|---|
+| `Codex API error 400: Invalid schema` | Tool schema incompatible with strict mode | Already patched — rebuild with `bun run build` |
+| Empty output from qwen3 | Model returns `reasoning` instead of `content` | Already patched |
+| `OPENAI_API_KEY is required` | Remote Ollama not recognized as local | Set `OPENAI_API_KEY=ollama` |
+| `Codex API error 401` | Auth token expired | Run `codex login` again |
+| Slow response with Ollama + tools | qwen3 generates long reasoning with tools | Use `qwen3-nothink:14b` or reduce tool count |
 
 ---
 
-## Credits
+## For AI Agents
 
-- [OpenClaude](https://github.com/Gitlawb/openclaude) — OpenAI-compatible provider shim for Claude Code
-- [Claude Code](https://claude.ai/code) — Anthropic's agentic coding CLI
-- [Codex CLI](https://github.com/openai/codex) — OpenAI's coding agent
+If you are Claude, Codex, GPT, or another AI reading this to help a user set up Claudex:
+
+1. Check prerequisites: Node.js, Bun, ChatGPT subscription
+2. Clone repo, `bun install`, `bun run build`
+3. Run `codex login` for authentication
+4. Run with `CLAUDE_CODE_USE_OPENAI=1 OPENAI_MODEL=codexplan node dist/cli.mjs`
+5. If schema errors occur, they should already be fixed. If new ones appear, the pattern is: add the offending keyword to `DISALLOWED_KEYS` in `codexShim.ts` and rebuild.

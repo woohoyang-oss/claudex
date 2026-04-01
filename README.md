@@ -1,355 +1,219 @@
-# OpenClaude
+# Claudex
 
-Use Claude Code with **any LLM** — not just Claude.
+### OpenClaude + Codex = **Claudex**
 
-OpenClaude is a fork of the [Claude Code source leak](https://gitlawb.com/node/repos/z6MkgKkb/instructkr-claude-code) (exposed via npm source maps on March 31, 2026). We added an OpenAI-compatible provider shim so you can plug in GPT-4o, DeepSeek, Gemini, Llama, Mistral, or any model that speaks the OpenAI chat completions API. It now also supports the ChatGPT Codex backend for `codexplan` and `codexspark`.
+> Claude Code's powerful agentic tools, powered by **GPT-5.4 (Codex)**, Ollama, or any LLM.
 
-All of Claude Code's tools work — bash, file read/write/edit, grep, glob, agents, tasks, MCP — just powered by whatever model you choose.
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   ┌──────────────┐         ┌──────────────┐                  ║
+║   │  OpenClaude   │    +    │    Codex     │   =   Claudex   ║
+║   │ (Claude Code  │         │  (GPT-5.4)  │                  ║
+║   │   tool system)│         │             │                  ║
+║   └──────────────┘         └──────────────┘                  ║
+║                                                              ║
+║   All of Claude Code's tools — Bash, Read, Write, Edit,      ║
+║   Grep, Glob, Agent, MCP — powered by the model you choose.  ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+Claudex is a fork of [OpenClaude](https://github.com/Gitlawb/openclaude) with patches for:
+- **Codex API strict schema compatibility** — GPT-5.4 via ChatGPT subscription ($20/mo)
+- **Reasoning model support** — qwen3, DeepSeek-R1, and other thinking models
 
 ---
 
-## Install
+## How It Works
 
-### Option A: npm (recommended)
-
-```bash
-npm install -g @gitlawb/openclaude
+```
+┌─────────────────────────────────────────────┐
+│         Claude Code Tool System             │
+│  Bash · Read · Write · Edit · Grep · Glob   │
+│  Agent · MCP · LSP · Tasks · Memory         │
+└──────────────────┬──────────────────────────┘
+                   │
+            ┌──────▼──────┐
+            │  openaiShim  │   ← Anthropic ↔ OpenAI format translation
+            │  codexShim   │   ← Codex Responses API adapter
+            └──────┬──────┘
+                   │
+       ┌───────────┼───────────────┐
+       ▼           ▼               ▼
+   Codex API    Ollama        OpenAI API
+   (GPT-5.4)   (qwen3,       (gpt-4o,
+               llama, etc)    etc)
 ```
 
-### Option B: From source (requires Bun)
-
-```bash
-# Clone from gitlawb
-git clone https://node.gitlawb.com/z6MkqDnb7Siv3Cwj7pGJq4T5EsUisECqR8KpnDLwcaZq5TPr/openclaude.git
-cd openclaude
-
-# Install dependencies
-bun install
-
-# Build
-bun run build
-
-# Link globally (optional)
-npm link
-```
-
-### Option C: Run directly with Bun (no build step)
-
-```bash
-git clone https://node.gitlawb.com/z6MkqDnb7Siv3Cwj7pGJq4T5EsUisECqR8KpnDLwcaZq5TPr/openclaude.git
-cd openclaude
-bun install
-bun run dev
-```
+Claude Code doesn't know it's talking to a different model.
 
 ---
 
 ## Quick Start
 
-### 1. Set 3 environment variables
+### 1. Install
 
 ```bash
-export CLAUDE_CODE_USE_OPENAI=1
-export OPENAI_API_KEY=sk-your-key-here
-export OPENAI_MODEL=gpt-4o
+git clone https://github.com/woohoyang-oss/claudex.git
+cd claudex
+bun install    # requires Bun: curl -fsSL https://bun.sh/install | bash
+bun run build
 ```
 
-### 2. Run it
+### 2. Set Up Codex Auth (one-time)
 
 ```bash
-# If installed via npm
-openclaude
-
-# If built from source
-bun run dev
-# or after build:
-node dist/cli.mjs
+npm install -g @openai/codex
+codex login    # opens browser → sign in with ChatGPT account
 ```
 
-That's it. The tool system, streaming, file editing, multi-step reasoning — everything works through the model you picked.
+### 3. Run
 
-The npm package name is `@gitlawb/openclaude`, but the installed CLI command is still `openclaude`.
+```bash
+# ⭐ Codex (GPT-5.4) — recommended
+CLAUDE_CODE_USE_OPENAI=1 OPENAI_MODEL=codexplan node dist/cli.mjs
+
+# Codex Spark (GPT-5.3, faster)
+CLAUDE_CODE_USE_OPENAI=1 OPENAI_MODEL=codexspark node dist/cli.mjs
+```
+
+That's it. All tools, streaming, multi-step reasoning — everything works.
+
+### Shell Alias (optional)
+
+```bash
+# Add to ~/.zshrc
+alias claudex='CLAUDE_CODE_USE_OPENAI=1 OPENAI_MODEL=codexplan node ~/claudex/dist/cli.mjs'
+```
 
 ---
 
-## Provider Examples
-
-### OpenAI
-
-```bash
-export CLAUDE_CODE_USE_OPENAI=1
-export OPENAI_API_KEY=sk-...
-export OPENAI_MODEL=gpt-4o
-```
-
-### Codex via ChatGPT auth
-
-`codexplan` maps to GPT-5.4 on the Codex backend with high reasoning.
-`codexspark` maps to GPT-5.3 Codex Spark for faster loops.
-
-If you already use the Codex CLI, OpenClaude will read `~/.codex/auth.json`
-automatically. You can also point it elsewhere with `CODEX_AUTH_JSON_PATH` or
-override the token directly with `CODEX_API_KEY`.
-
-```bash
-export CLAUDE_CODE_USE_OPENAI=1
-export OPENAI_MODEL=codexplan
-
-# optional if you do not already have ~/.codex/auth.json
-export CODEX_API_KEY=...
-
-openclaude
-```
-
-### DeepSeek
-
-```bash
-export CLAUDE_CODE_USE_OPENAI=1
-export OPENAI_API_KEY=sk-...
-export OPENAI_BASE_URL=https://api.deepseek.com/v1
-export OPENAI_MODEL=deepseek-chat
-```
-
-### Google Gemini (via OpenRouter)
-
-```bash
-export CLAUDE_CODE_USE_OPENAI=1
-export OPENAI_API_KEY=sk-or-...
-export OPENAI_BASE_URL=https://openrouter.ai/api/v1
-export OPENAI_MODEL=google/gemini-2.0-flash
-```
+## Other Providers
 
 ### Ollama (local, free)
 
 ```bash
-ollama pull llama3.3:70b
-
-export CLAUDE_CODE_USE_OPENAI=1
-export OPENAI_BASE_URL=http://localhost:11434/v1
-export OPENAI_MODEL=llama3.3:70b
-# no API key needed for local models
+CLAUDE_CODE_USE_OPENAI=1 \
+OPENAI_BASE_URL=http://localhost:11434/v1 \
+OPENAI_MODEL=qwen3:14b \
+OPENAI_API_KEY=ollama \
+node dist/cli.mjs
 ```
 
-### LM Studio (local)
+### OpenAI API
 
 ```bash
-export CLAUDE_CODE_USE_OPENAI=1
-export OPENAI_BASE_URL=http://localhost:1234/v1
-export OPENAI_MODEL=your-model-name
+CLAUDE_CODE_USE_OPENAI=1 \
+OPENAI_API_KEY=sk-... \
+OPENAI_MODEL=gpt-4o \
+node dist/cli.mjs
 ```
 
-### Together AI
+### DeepSeek / Groq / Together / Mistral / OpenRouter
 
 ```bash
-export CLAUDE_CODE_USE_OPENAI=1
-export OPENAI_API_KEY=...
-export OPENAI_BASE_URL=https://api.together.xyz/v1
-export OPENAI_MODEL=meta-llama/Llama-3.3-70B-Instruct-Turbo
+CLAUDE_CODE_USE_OPENAI=1 \
+OPENAI_API_KEY=... \
+OPENAI_BASE_URL=https://api.deepseek.com/v1 \
+OPENAI_MODEL=deepseek-chat \
+node dist/cli.mjs
 ```
 
-### Groq
+Any OpenAI-compatible API endpoint works.
 
-```bash
-export CLAUDE_CODE_USE_OPENAI=1
-export OPENAI_API_KEY=gsk_...
-export OPENAI_BASE_URL=https://api.groq.com/openai/v1
-export OPENAI_MODEL=llama-3.3-70b-versatile
-```
+---
 
-### Mistral
+## What's Included
 
-```bash
-export CLAUDE_CODE_USE_OPENAI=1
-export OPENAI_API_KEY=...
-export OPENAI_BASE_URL=https://api.mistral.ai/v1
-export OPENAI_MODEL=mistral-large-latest
-```
+| Feature | Status |
+|---|---|
+| All tools (Bash, Read, Write, Edit, Grep, Glob, Agent, MCP) | ✅ |
+| Streaming | ✅ |
+| Multi-step tool chains | ✅ |
+| Sub-agents | ✅ |
+| Slash commands (/commit, /review, /diff, etc.) | ✅ |
+| Memory system | ✅ |
+| Images (base64/URL) | ✅ |
+| Codex API (GPT-5.4, GPT-5.3) | ✅ **NEW** |
+| Reasoning models (qwen3, etc.) | ✅ **NEW** |
 
-### Azure OpenAI
+---
 
-```bash
-export CLAUDE_CODE_USE_OPENAI=1
-export OPENAI_API_KEY=your-azure-key
-export OPENAI_BASE_URL=https://your-resource.openai.azure.com/openai/deployments/your-deployment/v1
-export OPENAI_MODEL=gpt-4o
-```
+## Available Models
+
+| `OPENAI_MODEL` | Model | Auth | Cost |
+|---|---|---|---|
+| `codexplan` | GPT-5.4 (reasoning: high) | ChatGPT Plus/Pro | $20/mo included |
+| `codexspark` | GPT-5.3 Codex Spark | ChatGPT Plus/Pro | $20/mo included |
+| `gpt-4o` | GPT-4o | OpenAI API key | Pay-per-token |
+| `qwen3:14b` | Qwen3 14B | Ollama | Free |
+| `llama3.3:70b` | Llama 3.3 70B | Ollama | Free |
+| `deepseek-chat` | DeepSeek V3 | DeepSeek API | Pay-per-token |
+
+---
+
+## Pricing
+
+No separate billing for Codex — it's included in your ChatGPT subscription.
+
+| Plan | Price | Codex Usage |
+|---|---|---|
+| ChatGPT Plus | $20/mo | 30–150 messages per 5 hours |
+| ChatGPT Pro | $200/mo | 300–1,500 messages per 5 hours |
+| Ollama | Free | Unlimited (local) |
+
+---
+
+## What Changed from OpenClaude
+
+Only **2 files** modified:
+
+| File | Change |
+|---|---|
+| `src/services/api/openaiShim.ts` | Handle `reasoning` field from thinking models (qwen3, DeepSeek-R1) |
+| `src/services/api/codexShim.ts` | `enforceStrictSchema()` — fix tool schemas for Codex strict mode |
+
+### Codex Schema Fix Details
+
+Codex API enforces strict JSON Schema on tool definitions:
+- All `properties` must be in `required`
+- `additionalProperties: false` required
+- Disallowed keywords removed (`format`, `pattern`, `propertyNames`, etc.)
+- Optional fields wrapped as `anyOf: [type, {type: "null"}]`
 
 ---
 
 ## Environment Variables
 
 | Variable | Required | Description |
-|----------|----------|-------------|
-| `CLAUDE_CODE_USE_OPENAI` | Yes | Set to `1` to enable the OpenAI provider |
-| `OPENAI_API_KEY` | Yes* | Your API key (*not needed for local models like Ollama) |
-| `OPENAI_MODEL` | Yes | Model name (e.g. `gpt-4o`, `deepseek-chat`, `llama3.3:70b`) |
-| `OPENAI_BASE_URL` | No | API endpoint (defaults to `https://api.openai.com/v1`) |
-| `CODEX_API_KEY` | Codex only | Codex/ChatGPT access token override |
-| `CODEX_AUTH_JSON_PATH` | Codex only | Path to a Codex CLI `auth.json` file |
-| `CODEX_HOME` | Codex only | Alternative Codex home directory (`auth.json` will be read from here) |
-
-You can also use `ANTHROPIC_MODEL` to override the model name. `OPENAI_MODEL` takes priority.
+|---|---|---|
+| `CLAUDE_CODE_USE_OPENAI` | Yes | Set to `1` to enable |
+| `OPENAI_MODEL` | Yes | `codexplan`, `codexspark`, `gpt-4o`, etc. |
+| `OPENAI_API_KEY` | Varies | Not needed for Codex or Ollama |
+| `OPENAI_BASE_URL` | No | API endpoint (auto-detected for Codex) |
+| `CODEX_API_KEY` | No | Override Codex auth token |
 
 ---
 
-## Runtime Hardening
+## Troubleshooting
 
-Use these commands to keep the CLI stable and catch environment mistakes early:
-
-```bash
-# quick startup sanity check
-bun run smoke
-
-# validate provider env + reachability
-bun run doctor:runtime
-
-# print machine-readable runtime diagnostics
-bun run doctor:runtime:json
-
-# persist a diagnostics report to reports/doctor-runtime.json
-bun run doctor:report
-
-# full local hardening check (typecheck + smoke + runtime doctor)
-bun run hardening:check
-
-# strict hardening (includes project-wide typecheck)
-bun run hardening:strict
-```
-
-Notes:
-- `doctor:runtime` fails fast if `CLAUDE_CODE_USE_OPENAI=1` with a placeholder key (`SUA_CHAVE`) or a missing key for non-local providers.
-- Local providers (for example `http://localhost:11434/v1`) can run without `OPENAI_API_KEY`.
-- Codex profiles validate `CODEX_API_KEY` or the Codex CLI auth file and probe `POST /responses` instead of `GET /models`.
-
-### Provider Launch Profiles
-
-Use profile launchers to avoid repeated environment setup:
-
-```bash
-# one-time profile bootstrap (auto-detect ollama, otherwise openai)
-bun run profile:init
-
-# codex bootstrap (defaults to codexplan and ~/.codex/auth.json)
-bun run profile:codex
-
-# openai bootstrap with explicit key
-bun run profile:init -- --provider openai --api-key sk-...
-
-# ollama bootstrap with custom model
-bun run profile:init -- --provider ollama --model llama3.1:8b
-
-# codex bootstrap with a fast model alias
-bun run profile:init -- --provider codex --model codexspark
-
-# launch using persisted profile (.openclaude-profile.json)
-bun run dev:profile
-
-# codex profile (uses CODEX_API_KEY or ~/.codex/auth.json)
-bun run dev:codex
-
-# OpenAI profile (requires OPENAI_API_KEY in your shell)
-bun run dev:openai
-
-# Ollama profile (defaults: localhost:11434, llama3.1:8b)
-bun run dev:ollama
-```
-
-`dev:openai`, `dev:ollama`, and `dev:codex` run `doctor:runtime` first and only launch the app if checks pass.
-For `dev:ollama`, make sure Ollama is running locally before launch.
+| Issue | Solution |
+|---|---|
+| Codex 400 schema error | Already patched in this fork |
+| Empty output (qwen3) | Already patched — reasoning field handled |
+| `OPENAI_API_KEY required` | Set `OPENAI_API_KEY=ollama` for remote Ollama |
+| Codex auth expired | Run `codex login` again |
 
 ---
 
-## What Works
+## Credits
 
-- **All tools**: Bash, FileRead, FileWrite, FileEdit, Glob, Grep, WebFetch, WebSearch, Agent, MCP, LSP, NotebookEdit, Tasks
-- **Streaming**: Real-time token streaming
-- **Tool calling**: Multi-step tool chains (the model calls tools, gets results, continues)
-- **Images**: Base64 and URL images passed to vision models
-- **Slash commands**: /commit, /review, /compact, /diff, /doctor, etc.
-- **Sub-agents**: AgentTool spawns sub-agents using the same provider
-- **Memory**: Persistent memory system
-
-## What's Different
-
-- **No thinking mode**: Anthropic's extended thinking is disabled (OpenAI models use different reasoning)
-- **No prompt caching**: Anthropic-specific cache headers are skipped
-- **No beta features**: Anthropic-specific beta headers are ignored
-- **Token limits**: Defaults to 32K max output — some models may cap lower, which is handled gracefully
-
----
-
-## How It Works
-
-The shim (`src/services/api/openaiShim.ts`) sits between Claude Code and the LLM API:
-
-```
-Claude Code Tool System
-        |
-        v
-  Anthropic SDK interface (duck-typed)
-        |
-        v
-  openaiShim.ts  <-- translates formats
-        |
-        v
-  OpenAI Chat Completions API
-        |
-        v
-  Any compatible model
-```
-
-It translates:
-- Anthropic message blocks → OpenAI messages
-- Anthropic tool_use/tool_result → OpenAI function calls
-- OpenAI SSE streaming → Anthropic stream events
-- Anthropic system prompt arrays → OpenAI system messages
-
-The rest of Claude Code doesn't know it's talking to a different model.
-
----
-
-## Model Quality Notes
-
-Not all models are equal at agentic tool use. Here's a rough guide:
-
-| Model | Tool Calling | Code Quality | Speed |
-|-------|-------------|-------------|-------|
-| GPT-4o | Excellent | Excellent | Fast |
-| DeepSeek-V3 | Great | Great | Fast |
-| Gemini 2.0 Flash | Great | Good | Very Fast |
-| Llama 3.3 70B | Good | Good | Medium |
-| Mistral Large | Good | Good | Fast |
-| GPT-4o-mini | Good | Good | Very Fast |
-| Qwen 2.5 72B | Good | Good | Medium |
-| Smaller models (<7B) | Limited | Limited | Very Fast |
-
-For best results, use models with strong function/tool calling support.
-
----
-
-## Files Changed from Original
-
-```
-src/services/api/openaiShim.ts   — NEW: OpenAI-compatible API shim (724 lines)
-src/services/api/client.ts       — Routes to shim when CLAUDE_CODE_USE_OPENAI=1
-src/utils/model/providers.ts     — Added 'openai' provider type
-src/utils/model/configs.ts       — Added openai model mappings
-src/utils/model/model.ts         — Respects OPENAI_MODEL for defaults
-src/utils/auth.ts                — Recognizes OpenAI as valid 3P provider
-```
-
-6 files changed. 786 lines added. Zero dependencies added.
-
----
-
-## Origin
-
-This is a fork of [instructkr/claude-code](https://gitlawb.com/node/repos/z6MkgKkb/instructkr-claude-code), which mirrored the Claude Code source snapshot that became publicly accessible through an npm source map exposure on March 31, 2026.
-
-The original Claude Code source is the property of Anthropic. This repository is not affiliated with or endorsed by Anthropic.
-
----
+- [OpenClaude](https://github.com/Gitlawb/openclaude) — OpenAI-compatible shim for Claude Code
+- [Claude Code](https://claude.ai/code) — Anthropic's agentic coding CLI
+- [Codex CLI](https://github.com/openai/codex) — OpenAI's coding agent
 
 ## License
 
-This repository is provided for educational and research purposes. The original source code is subject to Anthropic's terms. The OpenAI shim additions are public domain.
+Educational and research purposes. Original Claude Code source is property of Anthropic.
+OpenAI shim and Codex patches are public domain.
