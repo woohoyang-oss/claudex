@@ -23,6 +23,25 @@ Claudex is a fork of [OpenClaude](https://github.com/Gitlawb/openclaude) with pa
 - **Codex API strict schema compatibility** — GPT-5.4 via ChatGPT subscription ($20/mo)
 - **Reasoning model support** — qwen3, DeepSeek-R1, and other thinking models
 
+## Browser Stack Branch
+
+If you are looking for the browser-connected workflow, Chrome extension, Chrome CDP bridge, or browser automation stack, use this branch:
+
+- [codex/browser-bridge-stack](https://github.com/woohoyang-oss/claudex/tree/codex/browser-bridge-stack)
+
+That branch includes:
+
+- Chrome extension side panel
+- local extension bridge queue
+- Chrome/CDP `browser-mcp`
+- Codex inbox relay
+- browser inbox worker with fail and retry handling
+
+Start with:
+
+- [Browser stack README](https://github.com/woohoyang-oss/claudex/tree/codex/browser-bridge-stack/codex-browser-bridge)
+- [Chrome extension guide](https://github.com/woohoyang-oss/claudex/tree/codex/browser-bridge-stack/codex-browser-bridge/chrome-extension)
+
 ---
 
 ## How It Works
