@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Codex Claude Bridge</title>
+    <link rel="stylesheet" href="./sidepanel.css" />
+  </head>
+  <body>
+    <main class="panel">
+      <header class="panel-header">
+        <p class="eyebrow">Codex Claude Bridge</p>
+        <h1>Browser Handoff</h1>
+        <p class="intro">Capture the current page, inspect live context, and prepare data for Codex and browser-mcp.</p>
+      </header>
+
+      <section class="card">
+        <div class="section-heading">
+          <h2>Active Tab</h2>
+          <button id="refresh-tab" class="ghost">Refresh</button>
+        </div>
+        <p id="tab-title" class="strong">No active tab</p>
+        <p id="tab-url" class="muted">Open a page to begin.</p>
+      </section>
+
+      <section class="card">
+        <div class="section-heading">
+          <h2>Capture</h2>
+        </div>
+        <div class="button-row">
+          <button id="capture-page">Capture Page Context</button>
+          <button id="copy-capture" class="ghost">Copy JSON</button>
+        </div>
+        <div class="button-row">
+          <button id="start-picker" class="ghost">Start Element Picker</button>
+          <button id="stop-picker" class="ghost">Stop Picker</button>
+        </div>
+        <pre id="capture-output" class="output">No page capture yet.</pre>
+      </section>
+
+      <section class="card">
+        <div class="section-heading">
+          <h2>Bridge</h2>
+        </div>
+        <label class="field">
+          <span>Local bridge URL</span>
+          <input id="bridge-url" type="text" placeholder="http://127.0.0.1:8876" />
+        </label>
+        <div class="button-row">
+          <button id="save-bridge-url" class="ghost">Save Bridge URL</button>
+          <button id="push-bridge">Push Last Capture</button>
+          <button id="push-picked" class="ghost">Push Picked Element</button>
+        </div>
+        <label class="field">
+          <span>Codex handoff note</span>
+          <textarea id="handoff-note" rows="4" placeholder="What should Codex do with this page or selected element?"></textarea>
+        </label>
+        <div class="button-row">
+          <button id="create-handoff">Create Codex Handoff</button>
+        </div>
+        <p id="bridge-status" class="muted">No bridge action yet.</p>
+      </section>
+
+      <section class="card">
+        <div class="section-heading">
+          <h2>Inbox</h2>
+          <button id="refresh-inbox" class="ghost">Refresh</button>
+        </div>
+        <p id="inbox-summary" class="muted">No inbox data loaded.</p>
+        <div id="inbox-list" class="inbox-list"></div>
+        <pre id="inbox-output" class="output">No inbox data loaded.</pre>
+      </section>
+
+      <section class="card">
+        <div class="section-heading">
+          <h2>Picked Element</h2>
+        </div>
+        <pre id="picked-output" class="output">No element selected.</pre>
+        <label class="field">
+          <span>Picked element action</span>
+          <select id="picked-action">
+            <option value="assert_visible">Assert Visible</option>
+            <option value="click">Click</option>
+            <option value="type">Type</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Action text</span>
+          <input id="picked-action-text" type="text" placeholder="Only used for type action" />
+        </label>
+        <label class="field">
+          <span>Action note</span>
+          <textarea id="picked-action-note" rows="3" placeholder="Optional note for Codex about this picked-element action"></textarea>
+        </label>
+        <div class="button-row">
+          <button id="create-action-request">Create Action Request</button>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="./sidepanel.js"></script>
+  </body>
+</html>

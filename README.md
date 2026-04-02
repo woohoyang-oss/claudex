@@ -23,24 +23,78 @@ Claudex is a fork of [OpenClaude](https://github.com/Gitlawb/openclaude) with pa
 - **Codex API strict schema compatibility** — GPT-5.4 via ChatGPT subscription ($20/mo)
 - **Reasoning model support** — qwen3, DeepSeek-R1, and other thinking models
 
-## Browser Stack Branch
+## Browser Stack
 
-If you are looking for the browser-connected workflow, Chrome extension, Chrome CDP bridge, or browser automation stack, use this branch:
+This repository now includes a browser-connected Codex stack under:
 
-- [codex/browser-bridge-stack](https://github.com/woohoyang-oss/claudex/tree/codex/browser-bridge-stack)
+```text
+codex-browser-bridge/
+```
 
-That branch includes:
+It contains:
 
-- Chrome extension side panel
-- local extension bridge queue
-- Chrome/CDP `browser-mcp`
-- Codex inbox relay
-- browser inbox worker with fail and retry handling
+- a Chrome extension side panel
+- a local extension bridge queue
+- a Chrome/CDP `browser-mcp` server
+- a Codex inbox relay for exported work packets
+- a browser inbox worker with fail and retry handling
 
-Start with:
+Start here if you want the browser-connected workflow:
 
-- [Browser stack README](https://github.com/woohoyang-oss/claudex/tree/codex/browser-bridge-stack/codex-browser-bridge)
-- [Chrome extension guide](https://github.com/woohoyang-oss/claudex/tree/codex/browser-bridge-stack/codex-browser-bridge/chrome-extension)
+- `codex-browser-bridge/README.md`
+- `codex-browser-bridge/chrome-extension/README.md`
+
+### Quick Start — Browser Stack
+
+One-time setup:
+
+```bash
+git clone https://github.com/woohoyang-oss/claudex.git
+cd claudex
+bun run browser:setup
+```
+
+Almost one-click startup:
+
+```bash
+bun run browser:oneclick
+```
+
+Optional local demo page:
+
+```bash
+bun run browser:lab
+```
+
+Chrome extension source is included in this repo at:
+
+```text
+codex-browser-bridge/chrome-extension
+```
+
+Load it in Chrome:
+
+1. Open `chrome://extensions`
+2. Turn on `Developer mode`
+3. Click `Load unpacked`
+4. Select `claudex/codex-browser-bridge/chrome-extension`
+
+What `browser:oneclick` does:
+
+- installs root dependencies
+- installs and builds `browser-mcp`
+- creates `.mcp.json` with the correct local absolute paths
+- creates runtime directories under `.runtime/`
+- starts the extension bridge, inbox relay, and browser worker in the background
+- launches Chrome with remote debugging on port `9222`
+
+Useful control commands:
+
+```bash
+bun run browser:up
+bun run browser:stop
+bun run browser:lab
+```
 
 ---
 

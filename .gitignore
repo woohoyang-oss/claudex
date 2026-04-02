@@ -5,3 +5,6 @@ dist/
 .env.*
 .openclaude-profile.json
 reports/
+.mcp.json
+.runtime/
+.codex-browser-bridge-run/
