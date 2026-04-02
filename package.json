@@ -22,6 +22,8 @@
     "browser:relay": "./run-browser-bridge-relay.sh",
     "browser:worker": "./run-browser-bridge-worker.sh",
     "browser:lab": "./run-browser-bridge-lab.sh",
+    "browser:moza:collect": "node codex-browser-bridge/scripts/collect-moza-market.mjs",
+    "browser:moza:report": "node codex-browser-bridge/scripts/report-moza-market.mjs",
     "dev": "bun run build && node dist/cli.mjs",
     "dev:profile": "bun run scripts/provider-launch.ts",
     "dev:profile:fast": "bun run scripts/provider-launch.ts auto --fast --bare",
