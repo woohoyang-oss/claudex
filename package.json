@@ -13,6 +13,11 @@
   ],
   "scripts": {
     "build": "bun run scripts/build.ts",
+    "browser:chrome": "./launch-browser-bridge-chrome.sh",
+    "browser:bridge": "./run-browser-bridge-extension.sh",
+    "browser:relay": "./run-browser-bridge-relay.sh",
+    "browser:worker": "./run-browser-bridge-worker.sh",
+    "browser:lab": "./run-browser-bridge-lab.sh",
     "dev": "bun run build && node dist/cli.mjs",
     "dev:profile": "bun run scripts/provider-launch.ts",
     "dev:profile:fast": "bun run scripts/provider-launch.ts auto --fast --bare",

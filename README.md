@@ -25,7 +25,9 @@ Claudex is a fork of [OpenClaude](https://github.com/Gitlawb/openclaude) with pa
 
 ## Experimental Branch Add-on
 
-This branch also includes an experimental browser-connected Codex stack under:
+This branch now includes a browser-connected Codex stack, and you can use it from this repo directly after cloning `claudex`.
+
+Implementation lives under:
 
 ```text
 codex-browser-bridge/
@@ -43,6 +45,39 @@ Start here if you want the browser-connected workflow:
 
 - `codex-browser-bridge/README.md`
 - `codex-browser-bridge/chrome-extension/README.md`
+
+### Quick Start — Browser Stack
+
+From the `claudex` repo root:
+
+```bash
+bun install
+
+# Start browser-connected services
+bun run browser:chrome
+bun run browser:bridge
+bun run browser:relay
+bun run browser:worker
+```
+
+Optional local demo page:
+
+```bash
+bun run browser:lab
+```
+
+Chrome extension source is included in this repo at:
+
+```text
+codex-browser-bridge/chrome-extension
+```
+
+Load it in Chrome:
+
+1. Open `chrome://extensions`
+2. Turn on `Developer mode`
+3. Click `Load unpacked`
+4. Select `claudex/codex-browser-bridge/chrome-extension`
 
 ---
 
