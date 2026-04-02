@@ -33,23 +33,23 @@ This extension does not replace:
 1. Open `chrome://extensions`
 2. Turn on `Developer mode`
 3. Click `Load unpacked`
-4. Select `/Users/wooho/Documents/Playground/chrome-extension`
+4. Select `claudex/codex-browser-bridge/chrome-extension`
 
 ## Before you use it
 
 Start the local services from the workspace root:
 
 ```bash
-/Users/wooho/Documents/Playground/launch-chrome-debug.sh
-/Users/wooho/Documents/Playground/run-extension-bridge.sh
-/Users/wooho/Documents/Playground/run-codex-inbox-relay.sh
-/Users/wooho/Documents/Playground/run-browser-inbox-worker.sh
+bun run browser:chrome
+bun run browser:bridge
+bun run browser:relay
+bun run browser:worker
 ```
 
 Optional local demo page:
 
 ```bash
-/Users/wooho/Documents/Playground/run-browser-lab.sh
+bun run browser:lab
 ```
 
 The browser worker is optional if you want to inspect queue items manually before running them.
@@ -138,9 +138,7 @@ If a request fails, it can move to `failed` and be retried later through the que
 
 This repository now includes a local bridge service:
 
-```bash
-/Users/wooho/Documents/Playground/run-extension-bridge.sh
-```
+`bun run browser:bridge`
 
 Use it together with `browser-mcp` so Codex can read:
 

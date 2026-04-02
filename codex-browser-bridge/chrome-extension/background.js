@@ -1,4 +1,4 @@
-const DEFAULT_BRIDGE_URL = "http://127.0.0.1:8765";
+const DEFAULT_BRIDGE_URL = "http://127.0.0.1:8876";
 
 chrome.runtime.onInstalled.addListener(async () => {
   await chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });

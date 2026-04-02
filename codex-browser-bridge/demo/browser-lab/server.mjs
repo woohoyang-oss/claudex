@@ -1,10 +1,11 @@
 import http from "node:http";
 import fs from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const HOST = process.env.BROWSER_LAB_HOST || "127.0.0.1";
 const PORT = Number(process.env.BROWSER_LAB_PORT || 4173);
-const ROOT = "/Users/wooho/Documents/Playground/demo/browser-lab";
+const ROOT = path.dirname(fileURLToPath(import.meta.url));
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url || "/", `http://${req.headers.host || `${HOST}:${PORT}`}`);

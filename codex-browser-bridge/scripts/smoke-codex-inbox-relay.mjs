@@ -1,7 +1,8 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const ROOT_DIR = "/Users/wooho/Documents/Playground";
+const ROOT_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DATA_DIR = path.join(ROOT_DIR, ".runtime", "codex-claude-bridge");
 const INBOX_PATH = path.join(DATA_DIR, "inbox.json");
 const RELAY_OPEN_DIR = path.join(DATA_DIR, "codex-inbox", "open");

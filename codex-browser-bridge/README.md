@@ -128,7 +128,7 @@ Load it in Chrome:
 1. Open `chrome://extensions`
 2. Turn on `Developer mode`
 3. Click `Load unpacked`
-4. Select `/Users/wooho/Documents/Playground/chrome-extension`
+4. Select `claudex/codex-browser-bridge/chrome-extension`
 
 Extension docs:
 
@@ -186,9 +186,7 @@ The easiest control loop is:
 
 The extension bridge stores browser-native events under:
 
-```text
-/Users/wooho/Documents/Playground/.runtime/codex-claude-bridge
-```
+`<repo-root>/.runtime/codex-claude-bridge`
 
 Important bridge outputs:
 
@@ -200,15 +198,11 @@ Important bridge outputs:
 
 The Codex inbox relay exports packets under:
 
-```text
-/Users/wooho/Documents/Playground/.runtime/codex-claude-bridge/codex-inbox/open
-```
+`<repo-root>/.runtime/codex-claude-bridge/codex-inbox/open`
 
 Completed packets are archived under:
 
-```text
-/Users/wooho/Documents/Playground/.runtime/codex-claude-bridge/codex-inbox/done
-```
+`<repo-root>/.runtime/codex-claude-bridge/codex-inbox/done`
 
 Bridge docs:
 
@@ -237,7 +231,7 @@ Run the browser stack:
 Run browser MCP:
 
 ```bash
-cd /Users/wooho/Documents/Playground/mcp/browser-mcp
+cd codex-browser-bridge/mcp/browser-mcp
 npm install
 npm run build
 npm run dev
@@ -274,7 +268,7 @@ Implemented smoke flows:
   Worker flow that drains pending action requests and handoffs from the queue
 - `npm run smoke:retry`
   Failed-item retry flow for browser inbox work
-- `node /Users/wooho/Documents/Playground/scripts/smoke-codex-inbox-relay.mjs`
+- `node codex-browser-bridge/scripts/smoke-codex-inbox-relay.mjs`
   Codex inbox packet export and archive flow
 
 ## Workspace Files

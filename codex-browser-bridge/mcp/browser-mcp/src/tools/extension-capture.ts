@@ -9,7 +9,7 @@ type InboxItem = {
 
 const DATA_DIR =
   process.env.CODEX_CLAUDE_BRIDGE_DIR ||
-  "/Users/wooho/Documents/Playground/.runtime/codex-claude-bridge";
+  path.resolve(process.cwd(), "..", "..", "..", ".runtime", "codex-claude-bridge");
 const LATEST_CAPTURE_PATH = path.join(DATA_DIR, "latest-capture.json");
 const LATEST_PICKED_PATH = path.join(DATA_DIR, "latest-picked-element.json");
 const LATEST_HANDOFF_PATH = path.join(DATA_DIR, "latest-handoff.json");

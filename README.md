@@ -23,17 +23,15 @@ Claudex is a fork of [OpenClaude](https://github.com/Gitlawb/openclaude) with pa
 - **Codex API strict schema compatibility** — GPT-5.4 via ChatGPT subscription ($20/mo)
 - **Reasoning model support** — qwen3, DeepSeek-R1, and other thinking models
 
-## Experimental Branch Add-on
+## Browser Stack
 
-This branch now includes a browser-connected Codex stack, and you can use it from this repo directly after cloning `claudex`.
-
-Implementation lives under:
+This repository now includes a browser-connected Codex stack under:
 
 ```text
 codex-browser-bridge/
 ```
 
-That add-on contains:
+It contains:
 
 - a Chrome extension side panel
 - a local extension bridge queue
@@ -48,16 +46,18 @@ Start here if you want the browser-connected workflow:
 
 ### Quick Start — Browser Stack
 
-From the `claudex` repo root:
+One-time setup:
 
 ```bash
-bun install
+git clone https://github.com/woohoyang-oss/claudex.git
+cd claudex
+bun run browser:setup
+```
 
-# Start browser-connected services
-bun run browser:chrome
-bun run browser:bridge
-bun run browser:relay
-bun run browser:worker
+Almost one-click startup:
+
+```bash
+bun run browser:oneclick
 ```
 
 Optional local demo page:
@@ -78,6 +78,23 @@ Load it in Chrome:
 2. Turn on `Developer mode`
 3. Click `Load unpacked`
 4. Select `claudex/codex-browser-bridge/chrome-extension`
+
+What `browser:oneclick` does:
+
+- installs root dependencies
+- installs and builds `browser-mcp`
+- creates `.mcp.json` with the correct local absolute paths
+- creates runtime directories under `.runtime/`
+- starts the extension bridge, inbox relay, and browser worker in the background
+- launches Chrome with remote debugging on port `9222`
+
+Useful control commands:
+
+```bash
+bun run browser:up
+bun run browser:stop
+bun run browser:lab
+```
 
 ---
 

@@ -1,9 +1,12 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
+const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
+const DEFAULT_DATA_DIR = path.resolve(SCRIPT_DIR, "..", "..", "..", ".runtime", "codex-claude-bridge");
 const DATA_DIR =
   process.env.CODEX_CLAUDE_BRIDGE_DIR ||
-  "/Users/wooho/Documents/Playground/.runtime/codex-claude-bridge";
+  DEFAULT_DATA_DIR;
 const POLL_INTERVAL_MS = Number(process.env.CODEX_INBOX_RELAY_INTERVAL_MS || 2000);
 
 const INBOX_PATH = path.join(DATA_DIR, "inbox.json");

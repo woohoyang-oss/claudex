@@ -13,22 +13,15 @@ Local bridge service for the Chrome extension.
 
 ## Run
 
-```bash
-cd /Users/wooho/Documents/Playground/bridge/extension-bridge
-node server.mjs
-```
+`bun run browser:bridge`
 
 Default address:
 
-```text
-http://127.0.0.1:8765
-```
+`http://127.0.0.1:8876`
 
 Default data directory:
 
-```text
-/Users/wooho/Documents/Playground/.runtime/codex-claude-bridge
-```
+`<repo-root>/.runtime/codex-claude-bridge`
 
 ## Endpoints
 

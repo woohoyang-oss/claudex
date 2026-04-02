@@ -1,5 +1,6 @@
-#!/bin/zsh
+#!/usr/bin/env bash
 set -euo pipefail
 
-cd /Users/wooho/Documents/Playground/demo/browser-lab
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$ROOT_DIR/demo/browser-lab"
 exec node server.mjs

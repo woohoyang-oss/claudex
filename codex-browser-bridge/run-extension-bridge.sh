@@ -1,6 +1,8 @@
-#!/bin/zsh
+#!/usr/bin/env bash
 set -euo pipefail
 
-cd /Users/wooho/Documents/Playground/bridge/extension-bridge
-export CODEX_CLAUDE_BRIDGE_DIR="${CODEX_CLAUDE_BRIDGE_DIR:-/Users/wooho/Documents/Playground/.runtime/codex-claude-bridge}"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export CODEX_CLAUDE_BRIDGE_DIR="${CODEX_CLAUDE_BRIDGE_DIR:-$ROOT_DIR/../.runtime/codex-claude-bridge}"
+export EXTENSION_BRIDGE_PORT="${EXTENSION_BRIDGE_PORT:-8876}"
+cd "$ROOT_DIR/bridge/extension-bridge"
 exec node server.mjs

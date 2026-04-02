@@ -1,7 +1,8 @@
-#!/bin/zsh
+#!/usr/bin/env bash
 set -euo pipefail
 
-cd /Users/wooho/Documents/Playground/claudex
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")"/.. && pwd)"
+cd "$ROOT_DIR"
 export CLAUDE_CODE_USE_OPENAI=1
 export OPENAI_MODEL="${OPENAI_MODEL:-codexplan}"
 

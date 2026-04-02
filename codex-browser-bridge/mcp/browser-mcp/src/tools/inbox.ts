@@ -3,7 +3,7 @@ import path from "node:path";
 
 const DATA_DIR =
   process.env.CODEX_CLAUDE_BRIDGE_DIR ||
-  "/Users/wooho/Documents/Playground/.runtime/codex-claude-bridge";
+  path.resolve(process.cwd(), "..", "..", "..", ".runtime", "codex-claude-bridge");
 const INBOX_PATH = path.join(DATA_DIR, "inbox.json");
 type InboxItem = {
   id?: string;

@@ -1,12 +1,15 @@
 import http from "node:http";
 import fs from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const HOST = process.env.EXTENSION_BRIDGE_HOST || "127.0.0.1";
-const PORT = Number(process.env.EXTENSION_BRIDGE_PORT || 8765);
+const PORT = Number(process.env.EXTENSION_BRIDGE_PORT || 8876);
+const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
+const DEFAULT_DATA_DIR = path.resolve(SCRIPT_DIR, "..", "..", "..", ".runtime", "codex-claude-bridge");
 const DATA_DIR =
   process.env.CODEX_CLAUDE_BRIDGE_DIR ||
-  "/Users/wooho/Documents/Playground/.runtime/codex-claude-bridge";
+  DEFAULT_DATA_DIR;
 const LATEST_CAPTURE_PATH = path.join(DATA_DIR, "latest-capture.json");
 const LATEST_PICKED_PATH = path.join(DATA_DIR, "latest-picked-element.json");
 const LATEST_HANDOFF_PATH = path.join(DATA_DIR, "latest-handoff.json");

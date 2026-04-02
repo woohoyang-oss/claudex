@@ -47,7 +47,7 @@ This first version includes:
 ## Install
 
 ```bash
-cd /Users/wooho/Documents/Playground/mcp/browser-mcp
+cd codex-browser-bridge/mcp/browser-mcp
 npm install
 ```
 
@@ -74,7 +74,7 @@ export BROWSER_MCP_CDP_URL=http://127.0.0.1:9222
 ## Run the MCP server
 
 ```bash
-cd /Users/wooho/Documents/Playground/mcp/browser-mcp
+cd codex-browser-bridge/mcp/browser-mcp
 npm run dev
 ```
 
@@ -88,7 +88,7 @@ npm start
 Run the inbox worker:
 
 ```bash
-cd /Users/wooho/Documents/Playground/mcp/browser-mcp
+cd codex-browser-bridge/mcp/browser-mcp
 npm run worker -- --once
 ```
 
@@ -97,7 +97,7 @@ npm run worker -- --once
 After Chrome is available on port `9222`:
 
 ```bash
-cd /Users/wooho/Documents/Playground/mcp/browser-mcp
+cd codex-browser-bridge/mcp/browser-mcp
 npm run build
 npm run smoke
 ```
@@ -105,9 +105,9 @@ npm run smoke
 Action demo:
 
 ```bash
-/Users/wooho/Documents/Playground/run-extension-bridge.sh
-/Users/wooho/Documents/Playground/run-browser-lab.sh
-cd /Users/wooho/Documents/Playground/mcp/browser-mcp
+bun run browser:bridge
+bun run browser:lab
+cd codex-browser-bridge/mcp/browser-mcp
 npm run build
 npm run smoke:action-demo
 ```
@@ -115,8 +115,8 @@ npm run smoke:action-demo
 Inbox demo:
 
 ```bash
-/Users/wooho/Documents/Playground/run-extension-bridge.sh
-cd /Users/wooho/Documents/Playground/mcp/browser-mcp
+bun run browser:bridge
+cd codex-browser-bridge/mcp/browser-mcp
 npm run build
 npm run smoke:inbox
 ```
@@ -124,8 +124,8 @@ npm run smoke:inbox
 Worker demo:
 
 ```bash
-/Users/wooho/Documents/Playground/run-extension-bridge.sh
-cd /Users/wooho/Documents/Playground/mcp/browser-mcp
+bun run browser:bridge
+cd codex-browser-bridge/mcp/browser-mcp
 npm run build
 npm run smoke:worker
 ```
@@ -133,8 +133,8 @@ npm run smoke:worker
 Retry demo:
 
 ```bash
-/Users/wooho/Documents/Playground/run-extension-bridge.sh
-cd /Users/wooho/Documents/Playground/mcp/browser-mcp
+bun run browser:bridge
+cd codex-browser-bridge/mcp/browser-mcp
 npm run build
 npm run smoke:retry
 ```
@@ -144,14 +144,12 @@ npm run smoke:retry
 If you also want browser-native capture from the Chrome extension:
 
 ```bash
-/Users/wooho/Documents/Playground/run-extension-bridge.sh
+bun run browser:bridge
 ```
 
 The bridge stores the latest extension payloads and queued inbox items in:
 
-```text
-/Users/wooho/Documents/Playground/.runtime/codex-claude-bridge
-```
+`<repo-root>/.runtime/codex-claude-bridge`
 
 ## Notes
 

@@ -4,9 +4,9 @@ This workspace is prepared to bootstrap a local Claudex runtime and communicate 
 
 ## Local runtime
 
-- Bootstrap repo: `/Users/wooho/Documents/Playground`
-- Claudex checkout path: `/Users/wooho/Documents/Playground/claudex`
-- Build output: `/Users/wooho/Documents/Playground/claudex/dist/cli.mjs`
+- Bootstrap repo: the current `claudex` checkout
+- Claudex checkout path: the repository root
+- Build output: `dist/cli.mjs`
 - Codex auth file: `~/.codex/auth.json`
 - Recommended model: `codexplan`
 

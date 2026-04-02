@@ -30,7 +30,7 @@ async function runCycle() {
       BROWSER_MCP_CDP_URL: process.env.BROWSER_MCP_CDP_URL ?? "http://127.0.0.1:9222",
       CODEX_CLAUDE_BRIDGE_DIR:
         process.env.CODEX_CLAUDE_BRIDGE_DIR ??
-        "/Users/wooho/Documents/Playground/.runtime/codex-claude-bridge",
+        path.resolve(process.cwd(), "..", "..", "..", ".runtime", "codex-claude-bridge"),
     },
   });
 

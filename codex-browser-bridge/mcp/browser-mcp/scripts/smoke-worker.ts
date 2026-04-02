@@ -3,7 +3,7 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 
 const execFileAsync = promisify(execFile);
-const BRIDGE_URL = process.env.EXTENSION_BRIDGE_URL ?? "http://127.0.0.1:8765";
+const BRIDGE_URL = process.env.EXTENSION_BRIDGE_URL ?? "http://127.0.0.1:8876";
 
 async function main(): Promise<void> {
   await fetch(`${BRIDGE_URL}/picked-element`, {
@@ -54,7 +54,7 @@ async function main(): Promise<void> {
         BROWSER_MCP_CDP_URL: process.env.BROWSER_MCP_CDP_URL ?? "http://127.0.0.1:9222",
         CODEX_CLAUDE_BRIDGE_DIR:
           process.env.CODEX_CLAUDE_BRIDGE_DIR ??
-          "/Users/wooho/Documents/Playground/.runtime/codex-claude-bridge",
+          path.resolve(process.cwd(), "..", "..", "..", ".runtime", "codex-claude-bridge"),
       },
     }
   );
@@ -63,7 +63,7 @@ async function main(): Promise<void> {
 
   const inboxPath =
     process.env.CODEX_CLAUDE_BRIDGE_DIR ??
-    "/Users/wooho/Documents/Playground/.runtime/codex-claude-bridge";
+    path.resolve(process.cwd(), "..", "..", "..", ".runtime", "codex-claude-bridge");
   const inbox = await import("node:fs/promises").then((fs) =>
     fs.readFile(path.join(inboxPath, "inbox.json"), "utf8")
   );
