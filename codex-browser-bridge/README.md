@@ -52,6 +52,7 @@ In practice, this means the repo already supports:
 - structured metadata and visible-link extraction
 - search-results extraction from live browser pages
 - top-to-bottom scroll capture for UI audits
+- page script scanning, tracker detection, and tech-footprint scanning
 
 ## Primary Use Cases
 
@@ -59,6 +60,7 @@ In practice, this means the repo already supports:
 - extract metadata and visible links from real pages
 - inspect live DOM, console logs, network logs, and screenshots
 - capture top/middle/lower page screenshots for UI review
+- inspect loaded scripts, trackers, and framework hints from the live page
 - pick an element in the Chrome extension and turn it into a browser action
 - send browser-native handoff packets into Codex-style work queues
 - run deterministic browser demos and smoke tests locally

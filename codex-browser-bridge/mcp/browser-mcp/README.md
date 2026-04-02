@@ -22,6 +22,9 @@ This first version includes:
 - `browser_extract_visible_links`
 - `browser_extract_search_results`
 - `browser_capture_scroll_story`
+- `browser_scan_scripts`
+- `browser_scan_trackers`
+- `browser_scan_page_tech`
 - `browser_get_extension_capture`
 - `browser_get_picked_element`
 - `browser_get_latest_handoff`

@@ -32,6 +32,9 @@ import {
 } from "./tools/picked-actions.js";
 import { press } from "./tools/press.js";
 import { runTestFlow } from "./tools/run-test-flow.js";
+import { scanPageTech } from "./tools/scan-page-tech.js";
+import { scanScripts } from "./tools/scan-scripts.js";
+import { scanTrackers } from "./tools/scan-trackers.js";
 import { extractSearchResults } from "./tools/search-results.js";
 import { selectTab } from "./tools/select-tab.js";
 import { captureScrollStory } from "./tools/scroll-story.js";
@@ -210,6 +213,36 @@ export async function startServer(): Promise<void> {
       },
     },
     async ({ limit }) => extractSearchResults(manager, { limit })
+  );
+
+  server.registerTool(
+    "browser_scan_scripts",
+    {
+      description: "Scan script tags on the current page and return structured script entries.",
+      inputSchema: {
+        limit: z.number().int().positive().optional().describe("Maximum number of script entries to return."),
+        includeInline: z.boolean().optional().describe("Include inline scripts with a short text preview."),
+      },
+    },
+    async ({ limit, includeInline }) => scanScripts(manager, { limit, includeInline })
+  );
+
+  server.registerTool(
+    "browser_scan_trackers",
+    {
+      description: "Scan the current page for common analytics, tracker, and monitoring scripts.",
+      inputSchema: {},
+    },
+    async () => scanTrackers(manager, sessions)
+  );
+
+  server.registerTool(
+    "browser_scan_page_tech",
+    {
+      description: "Scan the current page for technology hints such as frameworks, globals, generator tags, and assets.",
+      inputSchema: {},
+    },
+    async () => scanPageTech(manager)
   );
 
   server.registerTool(
