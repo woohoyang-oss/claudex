@@ -96,6 +96,28 @@ bun run browser:stop
 bun run browser:lab
 ```
 
+## Browser Stack vs Claude In Chrome
+
+This repo now contains two different browser-related ideas:
+
+- the original `claudeInChrome` support inside Claudex itself
+- the new `codex-browser-bridge` stack added to this repository
+
+If you are following the setup in this README, use the new browser stack commands:
+
+- `bun run browser:setup`
+- `bun run browser:oneclick`
+- `bun run browser:up`
+- `bun run browser:stop`
+
+That path is the one that powers:
+
+- the unpacked Chrome extension
+- local Chrome CDP control
+- the bridge queue
+- the Codex inbox relay
+- the browser worker
+
 ---
 
 ## How It Works

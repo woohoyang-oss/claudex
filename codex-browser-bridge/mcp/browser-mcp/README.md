@@ -18,6 +18,10 @@ This first version includes:
 - `browser_get_console_logs`
 - `browser_get_network_logs`
 - `browser_get_dom_summary`
+- `browser_get_page_metadata`
+- `browser_extract_visible_links`
+- `browser_extract_search_results`
+- `browser_capture_scroll_story`
 - `browser_get_extension_capture`
 - `browser_get_picked_element`
 - `browser_get_latest_handoff`
@@ -138,6 +142,14 @@ cd codex-browser-bridge/mcp/browser-mcp
 npm run build
 npm run smoke:retry
 ```
+
+## Analysis workflows
+
+Useful scenario templates live under:
+
+- `codex-browser-bridge/scenarios/search-crawl.md`
+- `codex-browser-bridge/scenarios/seo-audit.md`
+- `codex-browser-bridge/scenarios/ui-scroll-audit.md`
 
 ## Extension bridge
 

@@ -49,14 +49,42 @@ In practice, this means the repo already supports:
 - file-based Codex inbox packet generation
 - automatic worker-based queue draining
 - failed-item retry for browser work
+- structured metadata and visible-link extraction
+- search-results extraction from live browser pages
+- top-to-bottom scroll capture for UI audits
 
 ## Primary Use Cases
 
 - search in a real browser and extract result data
+- extract metadata and visible links from real pages
 - inspect live DOM, console logs, network logs, and screenshots
+- capture top/middle/lower page screenshots for UI review
 - pick an element in the Chrome extension and turn it into a browser action
 - send browser-native handoff packets into Codex-style work queues
 - run deterministic browser demos and smoke tests locally
+
+## Two Chrome Paths
+
+`Claudex` now has two browser-related concepts:
+
+- the built-in `claudeInChrome` path in the main product
+- the new `codex-browser-bridge` stack in this repository
+
+Use `codex-browser-bridge` when you want:
+
+- local Chrome CDP control
+- a loadable unpacked Chrome extension
+- queue-based handoff and action requests
+- file-based Codex inbox export
+
+Do not treat them as the same runtime. The built-in `claudeInChrome` flow is part of the original product surface, while `codex-browser-bridge` is the local browser automation stack added in this repo.
+
+For day-to-day use in this repository, prefer the scripts at the repo root:
+
+- `bun run browser:setup`
+- `bun run browser:oneclick`
+- `bun run browser:up`
+- `bun run browser:stop`
 
 ## Architecture
 
@@ -182,6 +210,8 @@ The easiest control loop is:
 3. `./run-browser-inbox-worker.sh`
 4. Use the extension side panel to create new work items
 
+If `browser:oneclick` cannot launch Chrome automatically, it now tells you to set `BROWSER_MCP_CHROME_PATH` and retry.
+
 ## Local Bridge And Relay
 
 The extension bridge stores browser-native events under:
@@ -208,6 +238,14 @@ Bridge docs:
 
 - `bridge/extension-bridge/README.md`
 - `bridge/codex-inbox-relay/README.md`
+
+## Analysis Scenarios
+
+Ready-to-run scenario templates:
+
+- `scenarios/search-crawl.md`
+- `scenarios/seo-audit.md`
+- `scenarios/ui-scroll-audit.md`
 
 ## Quick Start
 

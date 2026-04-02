@@ -9,6 +9,7 @@ import { assertVisible } from "./tools/assert-visible.js";
 import { getConsoleLogs } from "./tools/console-logs.js";
 import { getDomSummary } from "./tools/dom-summary.js";
 import { evalInPage } from "./tools/eval.js";
+import { getPageMetadata } from "./tools/page-metadata.js";
 import {
   getExtensionCapture,
   getInboxItems,
@@ -31,9 +32,12 @@ import {
 } from "./tools/picked-actions.js";
 import { press } from "./tools/press.js";
 import { runTestFlow } from "./tools/run-test-flow.js";
+import { extractSearchResults } from "./tools/search-results.js";
 import { selectTab } from "./tools/select-tab.js";
+import { captureScrollStory } from "./tools/scroll-story.js";
 import { screenshot } from "./tools/screenshot.js";
 import { scroll } from "./tools/scroll.js";
+import { extractVisibleLinks } from "./tools/visible-links.js";
 import { typeText } from "./tools/type.js";
 import { waitFor } from "./tools/wait-for.js";
 
@@ -174,6 +178,51 @@ export async function startServer(): Promise<void> {
       inputSchema: {},
     },
     async () => getDomSummary(manager)
+  );
+
+  server.registerTool(
+    "browser_get_page_metadata",
+    {
+      description: "Return page metadata such as title, description, canonical, robots, Open Graph tags, and H1 text.",
+      inputSchema: {},
+    },
+    async () => getPageMetadata(manager)
+  );
+
+  server.registerTool(
+    "browser_extract_visible_links",
+    {
+      description: "Return a structured list of visible links on the current page.",
+      inputSchema: {
+        limit: z.number().int().positive().optional().describe("Maximum number of links to return."),
+        sameOriginOnly: z.boolean().optional().describe("Only include links from the current origin."),
+      },
+    },
+    async ({ limit, sameOriginOnly }) => extractVisibleLinks(manager, { limit, sameOriginOnly })
+  );
+
+  server.registerTool(
+    "browser_extract_search_results",
+    {
+      description: "Extract structured search results from a visible results page.",
+      inputSchema: {
+        limit: z.number().int().positive().optional().describe("Maximum number of results to return."),
+      },
+    },
+    async ({ limit }) => extractSearchResults(manager, { limit })
+  );
+
+  server.registerTool(
+    "browser_capture_scroll_story",
+    {
+      description: "Capture multiple viewport screenshots from top to bottom for visual audits.",
+      inputSchema: {
+        outputDir: z.string().optional().describe("Absolute output directory for the captured screenshots."),
+        sections: z.number().int().positive().optional().describe("How many scroll sections to capture."),
+        waitMs: z.number().int().nonnegative().optional().describe("How long to wait after each scroll before capture."),
+      },
+    },
+    async ({ outputDir, sections, waitMs }) => captureScrollStory(manager, { outputDir, sections, waitMs })
   );
 
   server.registerTool(
