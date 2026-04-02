@@ -23,6 +23,27 @@ Claudex is a fork of [OpenClaude](https://github.com/Gitlawb/openclaude) with pa
 - **Codex API strict schema compatibility** — GPT-5.4 via ChatGPT subscription ($20/mo)
 - **Reasoning model support** — qwen3, DeepSeek-R1, and other thinking models
 
+## Experimental Branch Add-on
+
+This branch also includes an experimental browser-connected Codex stack under:
+
+```text
+codex-browser-bridge/
+```
+
+That add-on contains:
+
+- a Chrome extension side panel
+- a local extension bridge queue
+- a Chrome/CDP `browser-mcp` server
+- a Codex inbox relay for exported work packets
+- a browser inbox worker with fail and retry handling
+
+Start here if you want the browser-connected workflow:
+
+- `codex-browser-bridge/README.md`
+- `codex-browser-bridge/chrome-extension/README.md`
+
 ---
 
 ## How It Works
