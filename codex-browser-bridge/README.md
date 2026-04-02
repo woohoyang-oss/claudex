@@ -248,18 +248,6 @@ Ready-to-run scenario templates:
 - `scenarios/search-crawl.md`
 - `scenarios/seo-audit.md`
 - `scenarios/ui-scroll-audit.md`
-- `scenarios/moza-market-watch.md`
-
-Repeatable market tracking:
-
-- `node scripts/collect-moza-market.mjs`
-- `node scripts/report-moza-market.mjs`
-
-The collector stores timestamped snapshots under `.runtime/market-tracker/moza/` and compares:
-
-- Naver `해외` MOZA wheel listings
-- GTGear official MOZA wheel prices
-- price gaps, review growth, and purchase-label changes over time
 
 ## Quick Start
 

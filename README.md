@@ -96,15 +96,6 @@ bun run browser:stop
 bun run browser:lab
 ```
 
-Repeatable market tracking:
-
-```bash
-bun run browser:moza:collect
-bun run browser:moza:report
-```
-
-This saves repeated MOZA snapshots under `.runtime/market-tracker/moza/` and compares Naver `해외` listings with GTGear official wheel pricing.
-
 ## Browser Stack vs Claude In Chrome
 
 This repo now contains two different browser-related ideas:

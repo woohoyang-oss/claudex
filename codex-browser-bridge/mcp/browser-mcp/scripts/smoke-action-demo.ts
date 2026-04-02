@@ -27,7 +27,7 @@ async function main(): Promise<void> {
       source: "smoke-action-demo",
       activeTab: { title: "Browser Lab", url: LAB_URL },
       action: "type",
-      text: "Keychron",
+      text: "Demo Input",
       note: "Type the message into the picked input.",
       pickedElement: { selector: "#note-input", text: "" },
     }),
